@@ -265,8 +265,16 @@ describe("getUsers", () => {
     assert.deepEqual(unfiltered.facets.hobbies[0], { value: "Yoga", count: 6 });
     assert.ok(unfiltered.facets.hobbies.length <= 20);
     assert.ok(unfiltered.facets.nationalities.length <= 20);
-    assert.deepEqual(turkish.facets.nationalities, [{ value: "Turkish", count: 3 }]);
+    // nationality facets use exclude-self (OR logic): computed without the nationality filter,
+    // so all nationalities in the dataset appear even when a nationality is selected.
+    assert.deepEqual(turkish.facets.nationalities, [
+      { value: "Canadian", count: 3 },
+      { value: "Turkish", count: 3 },
+      { value: "American", count: 2 },
+      { value: "Japanese", count: 2 },
+    ]);
     assert.deepEqual(turkish.facets.hobbies[0], { value: "Yoga", count: 3 });
+    // hobby facets use include-self (AND logic): computed with current hobby filters applied.
     assert.deepEqual(yogaPhotography.facets.nationalities, [
       { value: "American", count: 1 },
       { value: "Canadian", count: 1 },
