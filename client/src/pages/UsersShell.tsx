@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { ArrowDownAZ, ArrowUpAZ, RefreshCw, Search, X } from "lucide-react";
@@ -21,6 +21,22 @@ const skeletonRows = Array.from({ length: 7 }, (_, index) => index);
 export const UsersShell = () => {
   const { state, updateState, toggleValue, clearFilters } = useUsersUrlState();
   const scrollParentRef = useRef<HTMLDivElement | null>(null);
+
+  // Local state for the search input — decoupled from URL to support debouncing.
+  const [searchInput, setSearchInput] = useState(state.q);
+
+  // Sync URL → input when state.q changes externally (e.g. clearFilters).
+  useEffect(() => {
+    setSearchInput((prev) => (prev !== state.q ? state.q : prev));
+  }, [state.q]);
+
+  // Debounce: push input value to URL state 350ms after the user stops typing.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      updateState({ q: searchInput });
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [searchInput, updateState]);
 
   const usersQuery = useInfiniteQuery({
     queryKey: ["users", state],
@@ -88,16 +104,19 @@ export const UsersShell = () => {
                 className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#68787f]"
               />
               <input
-                value={state.q}
-                onChange={(event) => updateState({ q: event.target.value })}
+                value={searchInput}
+                onChange={(event) => setSearchInput(event.target.value)}
                 placeholder="Search"
                 className="h-10 w-full rounded-md border border-[#cbd7d3] bg-white pl-9 pr-10 text-sm outline-none transition focus:border-[#1b7f6b] focus:ring-2 focus:ring-[#bfe1d7]"
               />
-              {state.q ? (
+              {searchInput ? (
                 <button
                   type="button"
                   title="Clear search"
-                  onClick={() => updateState({ q: "" })}
+                  onClick={() => {
+                    setSearchInput("");
+                    updateState({ q: "" });
+                  }}
                   className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md text-[#68787f] transition hover:bg-[#edf4f1]"
                 >
                   <X aria-hidden="true" className="h-4 w-4" />
