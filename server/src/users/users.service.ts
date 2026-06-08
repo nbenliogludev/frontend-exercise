@@ -46,7 +46,6 @@ type FacetRow = {
 };
 
 type FilterOptions = {
-  includeHobbies?: boolean;
   includeNationalities?: boolean;
 };
 
@@ -115,13 +114,10 @@ const createFilteredUsersQuery = (query: UsersQuery, options: FilterOptions = {}
   const queryBuilder = AppDataSource.getRepository(User).createQueryBuilder("user");
 
   applySearchFilter(queryBuilder, query.q);
+  applyHobbiesFilter(queryBuilder, query.hobbies);
 
   if (options.includeNationalities !== false) {
     applyNationalityFilter(queryBuilder, query.nationalities);
-  }
-
-  if (options.includeHobbies !== false) {
-    applyHobbiesFilter(queryBuilder, query.hobbies);
   }
 
   return queryBuilder;
@@ -202,10 +198,14 @@ const mapUser = (user: User): UserResponseItem => {
 
 export const getUsers = async (query: UsersQuery): Promise<UsersResponse> => {
   const total = await createFilteredUsersQuery(query).getCount();
+
+  // Skip facet queries for pages beyond the first — the client only uses facets
+  // from the initial page, so computing them on every infinite-scroll fetch is wasteful.
+  const isFirstPage = query.page === 1;
   const [users, hobbies, nationalities] = await Promise.all([
     getUsersPage(query),
-    getHobbyFacets(query),
-    getNationalityFacets(query),
+    isFirstPage ? getHobbyFacets(query) : Promise.resolve([]),
+    isFirstPage ? getNationalityFacets(query) : Promise.resolve([]),
   ]);
   const totalPages = total === 0 ? 0 : Math.ceil(total / query.limit);
 

@@ -197,9 +197,11 @@ const createAvatarUrl = (firstName: string, lastName: string, index: number) => 
 };
 
 const clearDatabase = async () => {
-  await AppDataSource.query("DELETE FROM user_hobbies");
-  await AppDataSource.getRepository(User).clear();
-  await AppDataSource.getRepository(Hobby).clear();
+  await AppDataSource.transaction(async (manager) => {
+    await manager.query("DELETE FROM user_hobbies");
+    await manager.query("DELETE FROM users");
+    await manager.query("DELETE FROM hobbies");
+  });
 };
 
 const seed = async () => {

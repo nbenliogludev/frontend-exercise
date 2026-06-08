@@ -7,7 +7,9 @@ services:
       DATABASE_PATH: /app/server/data/users.sqlite
       NODE_ENV: production
       PORT: 3001
-      TYPEORM_SYNCHRONIZE: "true"
+      # Schema is created by the seed service. Synchronize is disabled here to
+      # avoid unintended schema changes on every container restart.
+      TYPEORM_SYNCHRONIZE: "false"
     ports:
       - "3001:3001"
     volumes:
