@@ -164,7 +164,7 @@ const getUsersPage = async (query: UsersQuery) => {
 };
 
 const getHobbyFacets = async (query: UsersQuery) => {
-  const facetQuery = createFilteredUsersQuery(query, { includeHobbies: false })
+  const facetQuery = createFilteredUsersQuery(query)
     .innerJoin("user.hobbies", "facetHobby")
     .select("facetHobby.name", "value")
     .addSelect("COUNT(DISTINCT user.id)", "count")
