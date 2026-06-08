@@ -45,6 +45,11 @@ type FacetRow = {
   count: number | string;
 };
 
+type FilterOptions = {
+  includeHobbies?: boolean;
+  includeNationalities?: boolean;
+};
+
 const sortColumnByField: Record<UsersSortBy, string> = {
   first_name: "user.firstName",
   last_name: "user.lastName",
@@ -106,12 +111,18 @@ const applyHobbiesFilter = (queryBuilder: SelectQueryBuilder<User>, hobbies: str
   });
 };
 
-const createFilteredUsersQuery = (query: UsersQuery) => {
+const createFilteredUsersQuery = (query: UsersQuery, options: FilterOptions = {}) => {
   const queryBuilder = AppDataSource.getRepository(User).createQueryBuilder("user");
 
   applySearchFilter(queryBuilder, query.q);
-  applyNationalityFilter(queryBuilder, query.nationalities);
-  applyHobbiesFilter(queryBuilder, query.hobbies);
+
+  if (options.includeNationalities !== false) {
+    applyNationalityFilter(queryBuilder, query.nationalities);
+  }
+
+  if (options.includeHobbies !== false) {
+    applyHobbiesFilter(queryBuilder, query.hobbies);
+  }
 
   return queryBuilder;
 };
@@ -153,7 +164,7 @@ const getUsersPage = async (query: UsersQuery) => {
 };
 
 const getHobbyFacets = async (query: UsersQuery) => {
-  const facetQuery = createFilteredUsersQuery(query)
+  const facetQuery = createFilteredUsersQuery(query, { includeHobbies: false })
     .innerJoin("user.hobbies", "facetHobby")
     .select("facetHobby.name", "value")
     .addSelect("COUNT(DISTINCT user.id)", "count")
@@ -166,7 +177,7 @@ const getHobbyFacets = async (query: UsersQuery) => {
 };
 
 const getNationalityFacets = async (query: UsersQuery) => {
-  const facetQuery = createFilteredUsersQuery(query)
+  const facetQuery = createFilteredUsersQuery(query, { includeNationalities: false })
     .select("user.nationality", "value")
     .addSelect("COUNT(DISTINCT user.id)", "count")
     .groupBy("user.nationality")
