@@ -1,6 +1,7 @@
 {
   "name": "frontend-exercise",
   "version": "1.0.0",
+  "private": true,
   "repository": "",
   "author": "",
   "license": "MIT",
