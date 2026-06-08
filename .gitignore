@@ -29,3 +29,10 @@ yarn-error.log*
 
 .parcel-cache
 .idea/
+
+# local SQLite data
+server/data/*
+!server/data/.gitkeep
+*.sqlite
+*.sqlite3
+*.db
