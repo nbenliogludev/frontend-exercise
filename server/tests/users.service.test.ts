@@ -281,4 +281,13 @@ describe("getUsers", () => {
       { value: "Turkish", count: 1 },
     ]);
   });
+
+  it("returns empty facets for pages beyond the first", async () => {
+    const secondPage = await getUsers({ ...defaultQuery, page: 2, limit: 3 });
+
+    // Facets are only computed for page 1 to avoid redundant SQL queries on
+    // every infinite-scroll fetch. The client reads facets from the first page only.
+    assert.deepEqual(secondPage.facets.hobbies, []);
+    assert.deepEqual(secondPage.facets.nationalities, []);
+  });
 });
