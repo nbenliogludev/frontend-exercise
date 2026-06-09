@@ -26,7 +26,10 @@ export const FacetSection = ({ title, facets, selectedValues, onToggle }: FacetS
 
   return (
     <section className="space-y-2">
-      <h3 className="text-sm font-semibold tracking-normal text-[#2c3b42]">{title}</h3>
+      <div className="flex items-center justify-between gap-3">
+        <h3 className="text-sm font-semibold tracking-normal text-[#2c3b42]">{title}</h3>
+        <span className="text-xs font-medium uppercase tracking-normal text-[#7a8a90]">Users</span>
+      </div>
 
       <div className="space-y-1.5">
         {items.map((facet) => {
@@ -44,7 +47,12 @@ export const FacetSection = ({ title, facets, selectedValues, onToggle }: FacetS
                 className="h-4 w-4 accent-[#1b7f6b]"
               />
               <span className="min-w-0 truncate">{facet.value}</span>
-              <span className="text-xs tabular-nums text-[#66757a]">{facet.count}</span>
+              <span
+                className="rounded-md bg-[#eef3f4] px-1.5 py-0.5 text-xs font-medium tabular-nums text-[#607077]"
+                title={`${facet.count.toLocaleString()} users`}
+              >
+                {facet.count.toLocaleString()}
+              </span>
             </label>
           );
         })}

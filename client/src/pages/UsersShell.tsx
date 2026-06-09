@@ -209,7 +209,7 @@ export const UsersShell = () => {
                 ) : (
                   <ArrowUpAZ aria-hidden="true" className="h-4 w-4" />
                 )}
-                {state.sortDir.toUpperCase()}
+                {state.sortDir === "asc" ? "Ascending" : "Descending"}
               </button>
             </div>
           </div>
