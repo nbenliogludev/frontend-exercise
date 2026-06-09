@@ -27,8 +27,11 @@ export const UserCard = ({ user }: UserCardProps) => {
               <p className="text-sm text-[#607077]">{user.nationality}</p>
             </div>
 
-            <span className="w-fit rounded-md border border-[#d8cda8] bg-[#fff8df] px-2 py-1 text-sm font-medium tabular-nums text-[#705b16]">
-              {user.age}
+            <span
+              className="w-fit rounded-md border border-[#d8cda8] bg-[#fff8df] px-2 py-1 text-sm font-medium tabular-nums text-[#705b16]"
+              aria-label={`Age ${user.age}`}
+            >
+              Age {user.age}
             </span>
           </div>
 
@@ -43,8 +46,11 @@ export const UserCard = ({ user }: UserCardProps) => {
             ))}
 
             {hiddenHobbiesCount > 0 ? (
-              <span className="rounded-md border border-[#d6dce0] bg-[#f6f8f9] px-2 py-1 text-xs font-medium text-[#607077]">
-                +{hiddenHobbiesCount}
+              <span
+                className="rounded-md border border-[#d6dce0] bg-[#f6f8f9] px-2 py-1 text-xs font-medium text-[#607077]"
+                title={`${hiddenHobbiesCount} more hobbies`}
+              >
+                +{hiddenHobbiesCount} more
               </span>
             ) : null}
           </div>
