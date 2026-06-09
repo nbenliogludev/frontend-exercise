@@ -9,7 +9,7 @@
 
 ## Что умеет
 
-- Поиск по `first_name` и `last_name`.
+- Поиск по `first_name` и `last_name` с debounce: запрос уходит через 350 мс после остановки ввода.
 - Фильтр по nationalities с OR-логикой: подходит любая выбранная национальность.
 - Фильтр по hobbies с AND-логикой: пользователь должен иметь все выбранные хобби.
 - Совместное применение поиска, hobbies и nationalities.
@@ -121,6 +121,12 @@ yarn workspace frontend-server seed
 
 Пересоздаёт SQLite-данные для локального запуска.
 
+```bash
+yarn workspace frontend-server test
+```
+
+Запускает unit-тесты сервера (парсинг запроса, фильтрация, сортировка, пагинация, facets).
+
 ## API
 
 ### `GET /api/health`
@@ -184,8 +190,8 @@ curl "http://localhost:3001/api/users?q=el&hobbies=Yoga&nationalities=Turkish&so
     "sortDir": "desc"
   },
   "facets": {
-    "hobbies": [{ "value": "Yoga", "count": 42 }],
-    "nationalities": [{ "value": "Turkish", "count": 42 }]
+    "hobbies": [{ "value": "Yoga", "count": 12 }, { "value": "Photography", "count": 8 }],
+    "nationalities": [{ "value": "American", "count": 18 }, { "value": "Turkish", "count": 15 }]
   }
 }
 ```
